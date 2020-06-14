@@ -1,0 +1,37 @@
+Tim's Blazor Server Demo
+
+Start with new solution -- Blazor App -- Blazor Server App.
+
+When you start up the boilerplate, it will look
+different from the other UI apps. It includes a weather forecast,
+like the API boilerplate, and also a "Counter" .razor.
+
+-- Add the DLL from Library / Common Project --
+
+The usual. 1. Add the "hard copy" of the .dll from the
+Library project. 2. Add a reference to the .dll that's been
+copied to this project. Add the dependencies from the Library
+project to this .csproj file. 4. Confirm it builds.
+
+-- Configure the DI --
+
+Startup.cs. Add services to link to Library project.
+(We also deleted weatherforecast stuff, including files.)
+
+-- Routing --
+
+Startup.cs.
+Routing in Blazor Server is different than the other UIs we've seen.
+
+See some notes in Error.razor too. About pathing.
+
+Tim says there's a lot to know about Blazor;
+this course will be pretty cursory (and check out his Blazor class!).
+
+-- Add the Connection String --
+
+Update appsettings.json with the path from TimsDinerDB properties.
+
+-- Creating Data --
+
+
