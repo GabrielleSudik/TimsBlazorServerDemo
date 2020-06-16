@@ -34,4 +34,21 @@ Update appsettings.json with the path from TimsDinerDB properties.
 
 -- Creating Data --
 
+_Imports.razor -- where all of your using statements can go.
+You can do them file by file, but this is good for repeats.
+You'll add a few there.
 
+In Pages folder - new folder: Order
+Note where we put it doesn't change how navigation works.
+This is for our organization only. (Tim tends to match things
+but it's not required).
+
+In Order file -- add New Item -- Blazor Component. Call it Create.
+Create.razor. Remember that .razor means it's a Blazor component,
+not a razor page. (Who NAMED these? /scorn.)
+
+Create.razor. Note by default, the html and C# will be in the same page.
+You can separate them if you want. Tim likes them all together.
+(And isn't that the point of Blazor anyway?)
+
+-- Reading Data --

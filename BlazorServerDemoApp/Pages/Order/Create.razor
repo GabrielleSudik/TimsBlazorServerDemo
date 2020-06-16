@@ -1,0 +1,93 @@
+﻿@page "/Order/Create"
+@inject IFoodData foodData
+@inject IOrderData orderData
+
+<!--we added the at-page to identify the route-->
+<!--note the new kind of injection of IFoodData and IOrderData-->
+<!--those are already injected in Startup.cs,
+    but this is how you add them to a Blazor/Razor page.
+    I assume because the html and C# are all here together.-->
+<!--Not sure why Tim didn't start those with underscore _foodData.-->
+
+<h3>Create</h3>
+
+<EditForm Model="@order" OnValidSubmit="HandleValidSubmit">
+    <!--"order" gets populated when you submit the form.-->
+    <!--OnValidSubmit is another Blazor thing. If the form is
+        valid, it will call the method named in the value.
+        We'll write HandleValidSubmit() below.-->
+
+    <DataAnnotationsValidator />
+    <ValidationSummary Model="@order" />
+    <div class="form-group">
+        <label class="control-label">Item to order</label>
+        <select @onchange="FoodItemChange" class="form-control">
+            <!--Add FoodItemChange() method below.-->
+
+            <option value="">Select a meal ...</option>
+            @foreach (var f in foodItems)
+            {
+                <option value="@f.Id">@f.Title</option>
+            }
+        </select>
+    </div>
+    <div class="form-group">
+        <label class="control-label">Quantity</label>
+        <InputNumber @bind-Value="order.Quantity" class="form-control" />
+        <ValidationMessage For="@(() => order.Quantity)" class="text-danger" />
+    </div>
+    <div class="form-group">
+        <label class="control-label">Order's Name</label>
+        <InputText @bind-Value="order.OrderName" class="form-control" />
+        <ValidationMessage For="@(() => order.OrderName)" class="text-danger" />
+    </div>
+
+    <div class="form-group">
+        <input type="submit" value="Submit order" class="btn btn-primary" />
+    </div>
+
+</EditForm>
+
+@code {
+    private OrderModel order = new OrderModel();
+    private List<FoodModel> foodItems = new List<FoodModel>();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        foodItems = await foodData.GetFood(); //used in the foreach loop above
+                                              //to populate the dropdown.
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        order.Total = order.Quantity * foodItems.Where(x => x.Id == order.FoodId).First().Price;
+
+        int id = await orderData.CreateOrder(order);
+
+        order = new OrderModel(); //this just resets the data in the form.
+    }
+
+    private void FoodItemChange(ChangeEventArgs e)
+    {
+        //why do we have this method?
+        //compare to getting the OrderName and Quantity.
+        //they both use a Blazor InputText and InputNumber @bind-Value
+        //to bind the value. there isn't a similar thing for the dropdown.
+        //so we have to make our own using "select @onchange"
+        //and tell it what to do in our custom method.
+        //(Tim says this might be fixed soonish after his recording.)
+
+        if (string.IsNullOrWhiteSpace(e.Value.ToString()) == false)
+        {
+            order.FoodId = int.Parse(e.Value.ToString());
+        }
+        else
+        {
+            order.FoodId = 0;
+        }
+    }
+}
+
+<!--Blazor has a lot of new types and tags.
+    Example: EditForm is a Blazor thing.
+    InputNumber, at-bind-Value, others.-->
