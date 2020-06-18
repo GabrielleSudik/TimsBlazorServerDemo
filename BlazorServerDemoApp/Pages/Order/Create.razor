@@ -1,6 +1,7 @@
 ﻿@page "/Order/Create"
 @inject IFoodData foodData
 @inject IOrderData orderData
+@inject NavigationManager navigationManager
 
 <!--we added the at-page to identify the route-->
 <!--note the new kind of injection of IFoodData and IOrderData-->
@@ -64,7 +65,13 @@
 
         int id = await orderData.CreateOrder(order);
 
-        order = new OrderModel(); //this just resets the data in the form.
+        //order = new OrderModel(); //this just resets the data in the form.
+
+        //later:
+        navigationManager.NavigateTo($"order/display/{id}");
+        //navigationManager is something we had to inject
+        //it's needed when Blazor pages inter-navigate,
+        //like /order/create to /orders/display/id.
     }
 
     private void FoodItemChange(ChangeEventArgs e)

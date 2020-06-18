@@ -52,3 +52,19 @@ You can separate them if you want. Tim likes them all together.
 (And isn't that the point of Blazor anyway?)
 
 -- Reading Data --
+
+Add a new Razor Component to the Order folder: Display.razor
+As always, notes are there.
+
+Check it out at https://localhost:5001/order/display/14002
+
+Add a new Razor Component to a new folder food: List.razor
+
+https://localhost:5001/Food/List
+
+And we added a few nav items in NavMenu.razor.
+
+<span class="oi oi-spreadsheet"... and
+<span class="oi oi-pencil"
+The OI is a free bundle of icons on the web.
+Font-Awesome has more. The paid version has even more.
