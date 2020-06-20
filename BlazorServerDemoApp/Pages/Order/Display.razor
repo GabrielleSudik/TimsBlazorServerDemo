@@ -3,10 +3,17 @@
 
 @inject IFoodData foodData
 @inject IOrderData orderData
+@inject NavigationManager navigationManager
+
+@using BlazorServerDemoApp.Models
 
 <h3>Display</h3>
 
-@if (order is null)
+@if (recordNotFound)
+{
+    <h4>That record not found.</h4>
+}
+else if (order is null)
 {
     <h4>A brief message while we wait for an async method to load the order...</h4>
     <h5>In real life you'd use a spinning wheel or something.</h5>
@@ -35,8 +42,52 @@ else
                 <td><strong>Quantity</strong></td>
                 <td>@order.Quantity</td>
             </tr>
+
+            <tr>
+                <td colspan="2">
+                    @if (confirmDelete)
+                    {
+                        <button class="btn btn-outline-danger" @onclick="HandleDeleteRecord">
+                            Yes I definitely want to delete
+                        </button>
+                        <button class="btn btn-secondary" @onclick="(() => confirmDelete = false)">
+                            Cancel
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-danger" @onclick="(() => confirmDelete = true)">
+                            Delete this order
+                        </button>
+                    }
+                </td>
+                <!--that on-click there -- onclick doesn't have to call methods.
+                    it can also call an anonymous method.
+                    Since all we want to do is flip a bool, that's easy to put in an anon method.-->
+            </tr>
         </tbody>
     </table>
+
+    <!--next bit is the code for updating an order-->
+
+    <EditForm Model="@orderUpdate" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary Model="@orderUpdate" />
+        <div class="form-group">
+            <label class="control-label">Order's New Name</label>
+            <InputText @bind-Value="orderUpdate.OrderName" class="form-control" />
+            <ValidationMessage For="@(() => orderUpdate.OrderName)" class="text-danger" />
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Update order" class="btn btn-primary" />
+        </div>
+    </EditForm>
+
+    <!--That form differs from your MVC or Razor Pages in that it doesn't have hidden fields.
+        In those projects, the hidden fields contained the id of the order being changed,
+        and it had to be passed back to the page as it was refreshed.
+        In Blazor Server, the page isn't refreshed. It's kind of a stateful page (sorta).
+        So the page "remembers" the data already in it.-->
 }
 
 @code {
@@ -46,6 +97,14 @@ else
 
     private OrderModel order;
     private string itemPurchased;
+
+    private OrderUpdateModel orderUpdate = new OrderUpdateModel();
+    //we created OrderUpdateModel for the updating data lesson
+    //and of course to create the object that is used when we update an order.
+    //see the <EditForm Model= for its uses in the html.
+
+    private bool confirmDelete = false; //added for delete lesson.
+    private bool recordNotFound = false;
 
     //the logic of this method is the same as the logic in our other projects
     //but instead of other code that calls the method
@@ -60,7 +119,29 @@ else
             var food = await foodData.GetFood();
 
             itemPurchased = food.Where(x => x.Id == order.FoodId).FirstOrDefault()?.Title;
+
+            //these two are to populate the fields needed for the Update Order feature.
+            orderUpdate.Id = order.Id;
+            orderUpdate.OrderName = order.OrderName;
         }
+        else
+        {
+            recordNotFound = true;
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        await orderData.UpdateOrderName(orderUpdate.Id, orderUpdate.OrderName);
+
+        order.OrderName = orderUpdate.OrderName; //update the DB with the new name.
+    }
+
+    private async Task HandleDeleteRecord()
+    {
+        await orderData.DeleteOrder(Id); //you don't need Id passed in because it's a property of the class.
+                                         //ie, it's already known.
+        navigationManager.NavigateTo("Food/List");
     }
 }
 

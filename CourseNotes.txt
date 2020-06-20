@@ -68,3 +68,25 @@ And we added a few nav items in NavMenu.razor.
 <span class="oi oi-pencil"
 The OI is a free bundle of icons on the web.
 Font-Awesome has more. The paid version has even more.
+
+-- Updating Data --
+
+Display.razor - new form and method.
+New folder: Models. New class: OrderUpdateModel.cs
+
+-- Deleting Data --
+
+Display.razor
+
+Compare to MVC and Razor Pages projects, where we had a
+button that would take us to a new page to ask "are you sure?"
+Instead, we'll make the delete button itself change.
+We can do this easily in Blazor Server because the info about
+what to delete is already on the page. Changing the button
+saves loading a new page and new call to the DB.
+
+-- Deploying to Server --
+
+Again, you're skipping this part.
+
+--- End of Blazor Server Section ---
